@@ -17,8 +17,8 @@ done
 ##########################################################################################
 
 ### Set environment variables ############################################################
-export PATH=/Users/bendall/Projects/HERV_annotation/HERV_annotation.git/bin:$PATH
-export PYTHONPATH=/Users/bendall/Projects/HERV_annotation/HERV_annotation.git/python:$PYTHONPATH
+export PATH=$(dirname $(dirname $PWD))/bin:$PATH
+export PYTHONPATH=$(dirname $(dirname $PWD))/python:$PYTHONPATH
 
 ### Format UCSC tables as GTF ############################################################
 for f in ucsc/*.hg19.txt; do
@@ -153,10 +153,9 @@ python names_HML2.py > tmp/name_table.txt
 add_locus_tag --mapping tmp/name_table.txt < filtered.hg19.gtf > final_combined.hg19.gtf
 grep 'merged' final_combined.hg19.gtf > final_merged.hg19.gtf
 grep -v 'merged' final_combined.hg19.gtf > final.hg19.gtf
-
 ##########################################################################################
 
-echo -e '*\n!.gitignore' > tmp/.gitignore
 echo -e '*\n!.gitignore' > snapshots/.gitignore
 echo -e '*\n!.gitignore' > ucsc/.gitignore
 
+gtf2table final_merged.hg19.gtf > final_table.hg19.txt
