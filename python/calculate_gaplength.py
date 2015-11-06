@@ -3,6 +3,8 @@ import re
 import utils
 import sys
 
+QUESTIONABLE = 10000
+
 def main(parser):
     args = parser.parse_args()
     lines = utils.tab_line_gen(args.infile)
@@ -33,14 +35,19 @@ def main(parser):
         if len(g) == 1:
             merged.append(g[0])
         else:
+            mygaps = []
             s = ''
             for i in range(len(g)-1):
                 gaplen = int(g[i+1][3]) - int(g[i][4])
                 s += '%s:%s-%s(%s)' % (g[i][0],g[i][3],g[i][4],g[i][6])
                 s += ' --- %d --- ' % gaplen
-                gaplens.append(gaplen)
+                mygaps.append(gaplen)
                 
             s += '%s:%s-%s(%s)' % (g[-1][0],g[-1][3],g[-1][4],g[-1][6])
+            if any(g >= QUESTIONABLE for g in mygaps):
+                continue
+            else:
+                gaplens.extend(mygaps)
             print >>sys.stderr, s
             # spos = min(int(l[3]) for l in g)
             # epos = max(int(l[4]) for l in g)
@@ -53,9 +60,10 @@ def main(parser):
             # merged.append(newline)
 
     if gaplens:
-        print >>sys.stderr, 'min gap length:  %d' % min(gaplens)
-        print >>sys.stderr, 'mean gap length: %d' % (float(sum(gaplens)) / len(gaplens))
-        print >>sys.stderr, 'max gap length:  %d' % max(gaplens)
+        print >>sys.stderr, 'min gap length:    %d' % min(gaplens)
+        print >>sys.stderr, 'mean gap length:   %d' % (float(sum(gaplens)) / len(gaplens))
+        print >>sys.stderr, 'median gap length: %d' % sorted(gaplens)[len(gaplens)/2]
+        print >>sys.stderr, 'max gap length:    %d' % max(gaplens)
     else:
         print >>sys.stderr, 'No gaps found'
 
