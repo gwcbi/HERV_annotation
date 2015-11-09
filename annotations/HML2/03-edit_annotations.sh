@@ -79,7 +79,4 @@ grep 'merged' final_combined.hg19.gtf > final_merged.hg19.gtf
 grep -v 'merged' final_combined.hg19.gtf > final.hg19.gtf
 ##########################################################################################
 
-echo -e '*\n!.gitignore' > snapshots/.gitignore
-echo -e '*\n!.gitignore' > ucsc/.gitignore
-
 gtf2table final_merged.hg19.gtf > final_table.hg19.txt
