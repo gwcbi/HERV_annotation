@@ -18,7 +18,7 @@ def main(parser):
                 
         # Categorize cluster according to repeat types and orientation
         if reptypes[cnum] == ['ltr','internal','ltr']:
-            category = 'canonical'
+            category = 'prototype'
         elif reptypes[cnum] == ['ltr','internal'] or reptypes[cnum] == ['internal','ltr']:
             category = 'oneside'
         elif reptypes[cnum] == ['internal']:
@@ -52,7 +52,7 @@ def main(parser):
     for l in utils.sort_gtf(newlines):
         print >>args.outfile, '\t'.join(l)       
 
-    for cat in ['canonical','oneside','soloint','sololtr','unusual']:
+    for cat in ['prototype','oneside','soloint','sololtr','unusual']:
         print >>sys.stderr, '%s:     %d' % (cat, catcount[cat])
 
 if __name__ == '__main__':

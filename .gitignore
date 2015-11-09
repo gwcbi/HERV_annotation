@@ -59,3 +59,8 @@ target/
 # Other
 .DS_Store
 tmp*
+tmp/
+snapshots/
+
+# PyCharm
+.idea
