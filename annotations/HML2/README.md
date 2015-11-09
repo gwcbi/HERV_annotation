@@ -169,26 +169,21 @@ and one locus that needed to be split. I used annotations from the literature to
 decisions.
 
 #### Merge
-  + HML2_0706 + HML2_0707: Matches 11q12.3
-  + HML2_1025 + HML2_1026:
-HML2_1025 is a full length LTR5B(-) that has a full length LTR5B(+) insertion.
-HML2_1026 is 2315 bp away from HML2_1029, and in the same orientation.
-HML2_1026 also matches the annotation for 19q13.41
-  + HML2_1067 + HML2_1068: Matches 20q11.22
+  + **HML2_0706 + HML2_0707**: Matches 11q12.3
+  + **HML2_1025 + HML2_1026**: HML2\_1025 is a full length LTR5B(-) that has a full length LTR5B(+) insertion. HML2\_1026 is 2315 bp away from HML2_1029, and in the same orientation. HML2\_1026 also matches the annotation for 19q13.41
+  + **HML2_1067 + HML2_1068**: Matches 20q11.22
 
 #### Split
 
-  + HML2_1101
-  This is an LTR5B provirus with an LTR5Hs locus nearby.
-  Create a new merged annotation called HML2_1177
+  + **HML2_1101** This is an LTR5B provirus with an LTR5Hs locus nearby. Create a new merged annotation called HML2_1177.
 
 ### Unusual
 I also double-checked some of the unusual annotations to see what is going on:
 
-  + HML2_0323: HERVK-int inserted into 3' LTR, same as 4q32.1
-  + HML2_0411: internal LTR5B, same as 6p22.1
-  + HML2_0456: tandem provirus, same as 7p22.1a + 7p22.1b
-  + HML2_0793: HERVK-int in front of LTR5B
+  + **HML2_0323**: HERVK-int inserted into 3' LTR, same as 4q32.1
+  + **HML2_0411**: internal LTR5B, same as 6p22.1
+  + **HML2_0456**: tandem provirus, same as 7p22.1a + 7p22.1b
+  + **HML2_0793**: HERVK-int in front of LTR5B
 
 ## 7. Manual merge/split
 
