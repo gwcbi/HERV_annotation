@@ -22,7 +22,7 @@ if not os.path.exists(os.path.join(os.getcwd(),'snapshots')):
     os.mkdir(os.path.join(os.getcwd(),'snapshots'))
 
 categories = ['prototype', 'oneside', 'soloint', 'unusual']
-lines = [l.strip('\n').split('\t') for l in open('transcript.gtf','rU')]
+lines = [l.strip('\n').split('\t') for l in open('initial_merge.hg19.gtf','rU')]
 for cat in categories:
     if not os.path.exists(os.path.join(os.getcwd(),'snapshots/%s' % cat)):
         os.mkdir(os.path.join(os.getcwd(),'snapshots/%s' % cat))
@@ -45,7 +45,7 @@ if not os.path.exists(os.path.join(os.getcwd(),'snapshots/literature')):
 
 igv.snapshotDirectory(os.path.join(os.getcwd(),'snapshots/literature'))
 
-lines = [l.strip('\n').split('\t') for l in open('subtables.gtf','rU')]
+lines = [l.strip('\n').split('\t') for l in open('tmp/subtables.gtf','rU')]
 for l in lines:
     locus = '%s:%d-%d' % (l[0],int(l[3])-5000, int(l[4])+5000)
     attr = dict(re.findall('(\S+)\s+"([\s\S]+?)";',l[8]))

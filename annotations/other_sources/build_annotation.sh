@@ -12,5 +12,5 @@ mysql -h genome-mysql.cse.ucsc.edu -u genome -D hg19 -A \
 ### Download the cytogenetic band table ##################################################
 curl \
   --data 'db=hg19&hgta_track=cytoBand&hgta_table=cytoBand&hgta_regionType=genome&hgta_outputType=gff&boolshad.sendToGalaxy=0&boolshad.sendToGreat=0&boolshad.sendToGenomeSpace=0&hgta_outFileName=""&hgta_compressType=none&hgta_doTopSubmit="get output"' \
-  https://genome.ucsc.edu/cgi-bin/hgTables | sortgtf | cytoband.gtf
+  https://genome.ucsc.edu/cgi-bin/hgTables | sortgtf > cytoband.gtf
 ##########################################################################################
