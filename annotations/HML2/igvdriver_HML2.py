@@ -11,7 +11,7 @@ igv.new()
 igv.genome('hg19')
 igv.load(os.path.join(os.getcwd(),'../other_sources/rmsk_LTR.hg19.gtf'))
 igv.load(os.path.join(os.getcwd(),'tmp/concat.gtf'))
-igv.load(os.path.join(os.getcwd(),'tmp/canonical.gtf'))
+igv.load(os.path.join(os.getcwd(),'tmp/prototype.gtf'))
 igv.load(os.path.join(os.getcwd(),'tmp/oneside.gtf'))
 igv.load(os.path.join(os.getcwd(),'tmp/soloint.gtf'))
 igv.load(os.path.join(os.getcwd(),'tmp/sololtr.gtf'))
@@ -21,7 +21,7 @@ igv.load(os.path.join(os.getcwd(),'tmp/subtables.gtf'))
 if not os.path.exists(os.path.join(os.getcwd(),'snapshots')):
     os.mkdir(os.path.join(os.getcwd(),'snapshots'))
 
-categories = ['canonical', 'oneside', 'soloint', 'unusual']
+categories = ['prototype', 'oneside', 'soloint', 'unusual']
 lines = [l.strip('\n').split('\t') for l in open('transcript.gtf','rU')]
 for cat in categories:
     if not os.path.exists(os.path.join(os.getcwd(),'snapshots/%s' % cat)):

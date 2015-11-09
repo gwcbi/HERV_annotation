@@ -1,5 +1,9 @@
 #! /bin/bash
 
+### Set environment variables ############################################################
+export PATH=$(dirname $(dirname $PWD))/bin:$PATH
+export PYTHONPATH=$(dirname $(dirname $PWD))/python:$PYTHONPATH
+
 ### Download RepeatMasker tracks from UCSC ################################################
 mkdir -p ucsc
 echo -e '*\n!.gitignore' > ucsc/.gitignore
@@ -25,10 +29,6 @@ wc -l ucsc/*
 #      646 ucsc/LTR5_Hs.hg19.txt
 #     1621 total
 ##########################################################################################
-
-### Set environment variables ############################################################
-export PATH=$(dirname $(dirname $PWD))/bin:$PATH
-export PYTHONPATH=$(dirname $(dirname $PWD))/python:$PYTHONPATH
 
 ### Format UCSC tables as GTF ############################################################
 for f in ucsc/*.hg19.txt; do
