@@ -1,14 +1,23 @@
-## HML2
+Building HML2 Annotation
+------------------------
 
-Internal: ERVK-int
+## 0. Setup environment
 
-LTR: LTR5, LTR5A, LTR5B, LTR5_Hs
+Set your PATH and PYTHONPATH so that you can find the scripts in this repository
 
 ```bash
 ### Set environment variables ############################################################
 export PATH=$(dirname $(dirname $PWD))/bin:$PATH
 export PYTHONPATH=$(dirname $(dirname $PWD))/python:$PYTHONPATH
+```
 
+## 1. Download RepeatMasker Tracks
+
+In RepBase, HML2 internal regions are identified as "ERVK-int" and the LTR is the LTR5 subfamily.
+Members of the LTR5 subfamily include LTR5, LTR5A, LTR5B, and LTR5_Hs. In order to build
+the annotation, first we need to download the RepeatMasker tracks from UCSC:
+
+```bash
 ### Download RepeatMasker tracks from UCSC ################################################
 mkdir -p ucsc
 echo -e '*\n!.gitignore' > ucsc/.gitignore
@@ -34,24 +43,38 @@ wc -l ucsc/*
 #      646 ucsc/LTR5_Hs.hg19.txt
 #     1621 total
 ##########################################################################################
+```
 
+## 2. Reformat tracks as GTF
+
+The next step is to format the RepeatMasker tracks as GTF. I have provided a script, called
+`table2gtf` that puts the tracks into the desired format.
+
+```bash
 ### Format UCSC tables as GTF ############################################################
 for f in ucsc/*.hg19.txt; do
     table2gtf < $f > ${f%.*}.gtf
 done
 ##########################################################################################
+```
 
-### Determine merge distance #############################################################
-# The calculate_gaplength script is for examining the structure of Repeatmasker annotations
-# Sometimes, a single hit found by Repeatmasker has long internal gaps; these are included
-# in UCSC as two different annotation regions. I can identify these instances since the 
-# annotations are spatially adjacent and have the same alignment score. (Although it is
-# also possible that two separate hits are adjacent and have the same score).
-#
-# For the initial merging, the merge distance is chosen so that all internal annotations
-# belonging to the same hit are considered together; thus the merge distance is equal to
-# the maximum gap length for the internal models.
+## 3. Determine merge distance
 
+Since proviruses are often composed of several RepeatMasker hits, we need to merge annotations 
+that are _nearby_ in order to identify the complete provirus. The problem is that there is
+no clear definition of _nearby_. Instead of choosing a completely arbitrary cutoff, we use
+information from the RepeatMasker tracks to inform our choice of merge distance. For the
+initial merging, the merge distance is chosen so that all internal annotations belonging to
+the same hit are considered together; thus the merge distance is equal to the maximum gap length for the internal models.
+
+The calculate_gaplength script is for examining the structure of RepeatMasker annotations.
+Sometimes, a single hit found by RepeatMasker has long internal gaps; these are included in 
+UCSC as two different annotation regions. We identify these instances by looking for hits 
+that are are spatially adjacent and have the same alignment score. (Since it is possible 
+that two separate hits are adjacent and have the same score, we reject any hits that are 
+more than 10kb apart).
+
+```bash
 mergedist=$(cat ucsc/HERVK-int.hg19.gtf | calculate_gaplength)
 # Output:
 # chr4:165920483-165920578(+) --- 308 --- chr4:165920886-165921385(+)
@@ -74,8 +97,11 @@ mergedist=$(cat ucsc/HERVK-int.hg19.gtf | calculate_gaplength)
 # median gap length: 308
 # max gap length:    1149
 ##########################################################################################
+```
 
+## 4. Perform the initial merge
 
+```bash
 ### Initial merge using bedtools cluster #################################################
 cat ucsc/*.hg19.gtf | sortgtf | bedtools cluster -d $mergedist -i -| mergeclusters --prefix HML2 > initial_merge.hg19.gtf
 # Output:
@@ -85,5 +111,4 @@ cat ucsc/*.hg19.gtf | sortgtf | bedtools cluster -d $mergedist -i -| mergecluste
 # sololtr:     1051
 # unusual:     5
 ##########################################################################################
-
 ```
