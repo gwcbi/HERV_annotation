@@ -33,7 +33,7 @@ mergedist=$(cat ucsc/HERV9-int.hg19.gtf | calculate_gaplength)
 ##########################################################################################
 
 ### Initial merge using bedtools cluster #################################################
-cat ucsc/*.hg19.gtf | sortgtf | bedtools cluster -d $mergedist -i -| mergeclusters --prefix HML2 > initial_merge.hg19.gtf
+cat ucsc/*.hg19.gtf | sortgtf | bedtools cluster -d $mergedist -i -| mergeclusters --prefix HERV9 > initial_merge.hg19.gtf
 ##########################################################################################
 
 ### Setup GTF for visualization ##########################################################
@@ -47,11 +47,10 @@ cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'soloint' > tmp/soloint.gtf
 cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'sololtr' > tmp/sololtr.gtf
 cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'unusual' > tmp/unusual.gtf
 
-cat ../other_sources/subramanianT*.hg19.gtf | sed 's/^/chr/' | sortgtf > tmp/subtables.gtf
 ##########################################################################################
 
 ### Take the snapshots ###################################################################
-[[ $1 == 'SNAPSHOT' ]] && python igvdriver_HML2.py
+[[ $1 == 'SNAPSHOT' ]] && python igvdriver_HERV9.py
 ##########################################################################################
 
 ### Manual merge/split ###################################################################
