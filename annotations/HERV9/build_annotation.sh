@@ -9,10 +9,10 @@ mkdir -p ucsc
 
 # Internal
 mysql -h genome-mysql.cse.ucsc.edu -u genome -D hg19 -A \
-  -e 'SELECT * FROM rmsk WHERE repName = "HERVK-int";' > ucsc/HERVK-int.hg19.txt
+  -e 'SELECT * FROM rmsk WHERE repName = "HERV9-int";' > ucsc/HERV9-int.hg19.txt
 
 # LTR
-models="LTR5 LTR5A LTR5B LTR5_Hs"
+models="LTR12 LTR12B LTR12C LTR12D LTR12E LTR12F LTR12_"
 for model in $models; do
     echo "Query: $model"
     mysql -h genome-mysql.cse.ucsc.edu -u genome -D hg19 -A \
@@ -29,7 +29,7 @@ done
 ##########################################################################################
 
 ### Determine merge distance #############################################################
-mergedist=$(cat ucsc/HERVK-int.hg19.gtf | calculate_gaplength)
+mergedist=$(cat ucsc/HERV9-int.hg19.gtf | calculate_gaplength)
 ##########################################################################################
 
 ### Initial merge using bedtools cluster #################################################
