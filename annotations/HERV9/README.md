@@ -192,26 +192,15 @@ cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'unusual' > tmp/unusual.gtf
 
 ## 6. Identify annotations to merge/split
 
-After the visual inspection, it was clear that there were a few loci that needed to be merged
-and one locus that needed to be split. I used annotations from the literature to help in these
-decisions.
+After the visual inspection, 
 
 #### Merge
-  + **HML2_0706 + HML2_0707**: Matches 11q12.3
-  + **HML2_1025 + HML2_1026**: HML2\_1025 is a full length LTR5B(-) that has a full length LTR5B(+) insertion. HML2\_1026 is 2315 bp away from HML2_1029, and in the same orientation. HML2\_1026 also matches the annotation for 19q13.41
-  + **HML2_1067 + HML2_1068**: Matches 20q11.22
+
 
 #### Split
 
-  + **HML2_1101** This is an LTR5B provirus with an LTR5Hs locus nearby. Create a new merged annotation called HML2_1177.
-
 ### Unusual
 I also double-checked some of the unusual annotations to see what is going on:
-
-  + **HML2_0323**: HERVK-int inserted into 3' LTR, same as 4q32.1
-  + **HML2_0411**: internal LTR5B, same as 6p22.1
-  + **HML2_0456**: tandem provirus, same as 7p22.1a + 7p22.1b
-  + **HML2_0793**: HERVK-int in front of LTR5B
 
 ## 7. Manual merge/split
 
@@ -220,11 +209,7 @@ These scripts correctly update the merge line(s) for the locus and rename all th
 belonging to the locus.
 
 ```bash
-cat initial_merge.hg19.gtf | \
-    manual_merge --names HML2_0706,HML2_0707 --category prototype | \
-    manual_merge --names HML2_1025,HML2_1026 --category prototype | \
-    manual_merge --names HML2_1067,HML2_1068 --category prototype | \
-    manual_split --name HML2_1101 --split 3 --newname HML2_1177,HML2_1101 --category sololtr,prototype > edited.hg19.gtf
+# Here is the manual merge/split pipeline
 ```
 
 ## 8. Filter by covered length
@@ -244,34 +229,13 @@ grep 'merged' filtered.hg19.gtf | bedtools intersect -wo -a - -b ../other_source
     perl -lne '/^chr([XY\d]+)\s.*name "(\S+)".*gene_id "([\S\.]+)"/;print "$2\t$1$3"' > tmp/cyto_name_map.txt
 ```
 
-Also create a text file mapping the locus ID to annotations from the literature
-
-```bash
-grep 'merged' filtered.hg19.gtf | bedtools intersect -wo -a - -b tmp/subtables.gtf | \
-    perl -lne '/name "(\S+)".*locus "([\S\.]+)"/;print "$1\t$2"' > tmp/sub_name_map.txt
-
-```
-
-The script `names_HML2.py` creates names for each locus using the cytogenetic band. If multiple
+The script `names_HERV9.py` creates names for each locus using the cytogenetic band. If multiple
 loci are present in the same band, a letter (a,b,c...) is added to the name. We compare the
 names we generate to the names given in the literature.
 
 ```bash
-python names_HML2.py > tmp/name_table.txt
-
-# Output:
-# Mismatch: 3p12.3 3p12.3b
-# Mismatch: 3q21.2 3q21.2b
-# Mismatch: 4p16.1a 4p16.1b
-# Mismatch: 4p16.1b 4p16.1d
-# Mismatch: 6p22.1 6p22.1b
-# Mismatch: 7p22.1b 7p22.1
-# Mismatch: 8p23.1a 8p23.1c
-# Mismatch: 8p23.1b 8p23.1e
-# Mismatch: 8p23.1c 8p23.1f
-# Mismatch: 8p23.1d 8p23.1g
-# Mismatch: 11p15.4 11p15.4a
-# Mismatch: 19p12c 19p12b
+# Need to write this script
+# python names_HERV9.py > tmp/name_table.txt
 ```
 
 ## 10. Update GTF with locus name
