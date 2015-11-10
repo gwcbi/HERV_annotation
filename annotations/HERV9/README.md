@@ -9,7 +9,6 @@ Set your PATH and PYTHONPATH so that you can find the scripts in this repository
 ### Set environment variables ############################################################
 export PATH=$(dirname $(dirname $PWD))/bin:$PATH
 export PYTHONPATH=$(dirname $(dirname $PWD))/python:$PYTHONPATH
-##########################################################################################
 ```
 
 ## 1. Download RepeatMasker Tracks
@@ -35,7 +34,6 @@ for model in $models; do
 done
 
 wc -l ucsc/*
-##########################################################################################
 ```
 
 ```
@@ -61,7 +59,6 @@ The next step is to format the RepeatMasker tracks as GTF. I have provided a scr
 for f in ucsc/*.hg19.txt; do
     table2gtf < $f > ${f%.*}.gtf
 done
-##########################################################################################
 ```
 
 ## 3. Determine merge distance
@@ -83,7 +80,6 @@ more than 10kb apart).
 ```bash
 ### Determine merge distance #############################################################
 mergedist=$(cat ucsc/HERV9-int.hg19.gtf | calculate_gaplength)
-##########################################################################################
 ```
 
 ```
@@ -167,7 +163,7 @@ span all annotations for the cluster. and are used for grouping together the ann
 ```bash
 ### Initial merge using bedtools cluster #################################################
 cat ucsc/*.hg19.gtf | sortgtf | bedtools cluster -d $mergedist -i -| mergeclusters --prefix HERV9 > initial_merge.hg19.gtf
-##########################################################################################
+```
 
 ```
 # Output:
@@ -198,17 +194,14 @@ cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'oneside' > tmp/oneside.gtf
 cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'soloint' > tmp/soloint.gtf
 cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'sololtr' > tmp/sololtr.gtf
 cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'unusual' > tmp/unusual.gtf
-##########################################################################################
 
 ### Take the snapshots ###################################################################
 [[ $1 == 'SNAPSHOT' ]] && python igvdriver_HERV9.py
-##########################################################################################
 ```
 
 ## 6. Identify annotations to merge/split
 
-After the visual inspection, 
-
+After the visual inspection:
 
 #### Merge
   + **HERV9_2578 + HERV9_2579, prototype** Several insertions of HERV17-int and LTR12F
@@ -272,14 +265,13 @@ cat initial_merge.hg19.gtf | \
         manual_split --name HERV9_4082 --split 2 --newname HERV9_4705,HERV9_4082 --category oneside,prototype | \
         manual_split --name HERV9_4202 --split 4 --newname HERV9_4202,HERV9_4706 --category oneside,sololtr | \
         manual_split --name HERV9_4273 --split 2 --newname HERV9_4273,HERV9_4707 --category oneside,sololtr > edited.hg19.gtf
-##########################################################################################```
+```
 
 I wrote a script that instructs IGV to display all the edited loci, `igvdriver_edited_HERV9.py`.
 
 ```bash
 ### View edited files ####################################################################
 [[ $1 == 'SNAPSHOT' ]] && python igvdriver_edited_HERV9.py
-##########################################################################################
 ```
 
 ## 8. Filter by covered length
@@ -289,7 +281,6 @@ Exclude locus if total number of bases aligned to model is less than threshold
 ```bash
 ### Filter by covered length #############################################################
 filter_covlen --threshold 500 < edited.hg19.gtf > filtered.hg19.gtf
-##########################################################################################
 ```
 
 ## 9. Assign names to loci
@@ -304,7 +295,6 @@ grep 'merged' filtered.hg19.gtf | bedtools intersect -wo -a - -b ../other_source
 
 # Assign names to loci that are not solo LTR and are over 500 bp
 python names_HERV9.py > tmp/name_table.txt
-##########################################################################################
 ```
 
 The script `names_HERV9.py` creates names for each locus using the cytogenetic band. If multiple
@@ -319,7 +309,6 @@ is put into the "locus" field, which is used by telescope.
 ```bash
 ### Add locus tag to GTF #################################################################
 add_locus_tag --mapping tmp/name_table.txt < filtered.hg19.gtf > HERV9_combined.hg19.gtf
-##########################################################################################
 ```
 
 ## 11. Create final annotation files
@@ -333,5 +322,4 @@ is used by telescope. Also create a table containing one row for each merged lin
 grep 'merged' HERV9_combined.hg19.gtf > HERV9_merged.hg19.gtf
 grep -v 'merged' HERV9_combined.hg19.gtf > HERV9.hg19.gtf
 gtf2table HERV9_merged.hg19.gtf > HERV9.locus_table.txt
-##########################################################################################
 ```
