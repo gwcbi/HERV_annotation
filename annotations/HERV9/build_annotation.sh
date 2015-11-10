@@ -55,10 +55,27 @@ cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'unusual' > tmp/unusual.gtf
 
 ### Manual merge/split ###################################################################
 cat initial_merge.hg19.gtf | \
-    manual_merge --names HML2_0706,HML2_0707 --category prototype | \
-    manual_merge --names HML2_1025,HML2_1026 --category prototype | \
-    manual_merge --names HML2_1067,HML2_1068 --category prototype | \
-    manual_split --name HML2_1101 --split 3 --newname HML2_1177,HML2_1101 --category sololtr,prototype > edited.hg19.gtf
+        manual_merge --names HERV9_2578,HERV9_2579 --category prototype | \
+        manual_merge --names HERV9_0461,HERV9_0462 --category prototype | \
+        manual_merge --names HERV9_0664,HERV9_0665 --category prototype | \
+        manual_merge --names HERV9_1485,HERV9_1486 --category prototype | \
+        manual_merge --names HERV9_1998,HERV9_1999 --category prototype | \
+        manual_merge --names HERV9_2434,HERV9_2435 --category prototype | \
+        manual_merge --names HERV9_3483,HERV9_3484 --category prototype | \
+        manual_merge --names HERV9_3516,HERV9_3517 --category prototype | \
+        manual_split --name HERV9_0213 --split 5 --newname HERV9_0213,HERV9_4699 --category prototype,prototype | \
+        manual_split --name HERV9_1480 --split 3 --newname HERV9_1480,HERV9_4700 --category prototype,soloint | \
+        manual_split --name HERV9_1648 --split 1 --newname HERV9_4701,HERV9_1648 --category sololtr,prototype | \
+        manual_split --name HERV9_2426 --split 4 --newname HERV9_2426,HERV9_4702 --category prototype,sololtr | \
+        manual_split --name HERV9_2638 --split 1 --newname HERV9_4703,HERV9_2638 --category sololtr,prototype | \
+        manual_split --name HERV9_3560 --split 2 --newname HERV9_3560,HERV9_4704 --category oneside,sololtr | \
+        manual_split --name HERV9_4082 --split 2 --newname HERV9_4705,HERV9_4082 --category oneside,prototype | \
+        manual_split --name HERV9_4202 --split 4 --newname HERV9_4202,HERV9_4706 --category oneside,sololtr | \
+        manual_split --name HERV9_4273 --split 2 --newname HERV9_4273,HERV9_4707 --category oneside,sololtr > edited.hg19.gtf
+##########################################################################################
+
+### Take the snapshots ###################################################################
+[[ $1 == 'SNAPSHOT' ]] && python igvdriver_edited_HERV9.py
 ##########################################################################################
 
 ### Filter by covered length #############################################################
@@ -70,13 +87,9 @@ filter_covlen --threshold 500 < edited.hg19.gtf > filtered.hg19.gtf
 grep 'merged' filtered.hg19.gtf | bedtools intersect -wo -a - -b ../other_sources/cytoband.gtf | \
     perl -lne '/^chr([XY\d]+)\s.*name "(\S+)".*gene_id "([\S\.]+)"/;print "$2\t$1$3"' > tmp/cyto_name_map.txt
 
-# Map locus IDs to aliases from Subramanian et al.
-grep 'merged' filtered.hg19.gtf | bedtools intersect -wo -a - -b tmp/subtables.gtf | \
-    perl -lne '/name "(\S+)".*locus "([\S\.]+)"/;print "$1\t$2"' > tmp/sub_name_map.txt
-
 # Assign names to loci that are not solo LTR and are over 500 bp
 # Also for loci that are already named
-python names_HML2.py > tmp/name_table.txt
+python names_HERV9.py > tmp/name_table.txt
 ##########################################################################################
 
 ### Add locus tag to GTF #################################################################

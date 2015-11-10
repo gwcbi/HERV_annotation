@@ -194,13 +194,42 @@ cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'unusual' > tmp/unusual.gtf
 
 After the visual inspection, 
 
+
 #### Merge
-
-
+  + **HERV9_2578 + HERV9_2579, prototype** Several insertions of HERV17-int and LTR12F
+  + **HERV9_0461 + HERV9_0462, prototype** Close together in same direction
+  + **HERV9_0664 + HERV9_0665, prototype** MER9a3 and HERVK9-int are inserted into HERV9(LTR12) provirus
+  + **HERV9_1485 + HERV9_1486, prototype** LTR2B and Harlequin-int inserted into HERV9 provirus  
+  + **HERV9_1998 + HERV9_1999, prototype** HERV17-int inserted into HERV9(LTR12F) provirus    
+  + **HERV9_2434 + HERV9_2435, prototype** LTR17 and HERV17-int inserted into HERV9(LTR12B) provirus
+  + **HERV9_3483 + HERV9_3484, prototype** Both are LTR12D in same direction
+  + **HERV9_3516 + HERV9_3517, prototype** HERV30-int and MER11B are inserted into HERV9 (LTR12F) provirus
+   
 #### Split
+  + **HERV9_0213** HERV9(LTR12F) and HERV9(LTR12\_v) proviruses are 500bp apart.
+Annotations 1-5 assigned to HERV9\_0213 (prototype) and annotations 6-11 are assigned to new locus HERV9\_4699 (prototype).
+  + **HERV9_1480** HERV9(LTR12F) provirus is near HERV9-int locus.
+Annotations 1-3 assigned to HERV9\_1480 (prototype) and annotation 4 is assigned to new locus HERV9\_4700 (soloint)
+  + **HERV9_1648** HERV9(LTR12) provirus is near solo LTR12C.
+Annotation 1 assigned to new locus HERV9\_4701 (sololtr) and annotations 2-6 assigned to HERV9\_1648 (prototype).
+  + **HERV9_2426** HERV9(LTR12\_) provirus is near solo LTR12B.
+Annotations 1-4 assigned to HERV9\_2426 (prototype) and annotation 5 assigned to new locus HERV9\_4702 (sololtr).
+  + **HERV9_2638** HERV9(LTR12/D) provirus is near solo LTR12C.
+Annotation 1 assigned to new locus HERV9\_4703 (sololtr) and annotation 2-4 assigned to HERV9\_2638 (prototype).
+  + **HERV9_3560** LTR12C and LTR12C in opposite directions.
+Annotations 1-2 assigned to HERV9\_3560 (oneside) and annotation 3 assigned to new locus HERV9\_4704 (sololtr).
+  + **HERV9_4082** HERV9(LTR12C) provirus is near one-sided locus in opposite direction.
+Annotations 1-2 assigned to new locus HERV9\_4705 (oneside) and annotations 3-5 assigned to HERV9\_4082 (prototype).
+  + **HERV9_4202** LTR12F + HERV9-int in opposite direction to LTR12C.
+Annotations 1-4 assigned to HERV9\_4202 (oneside) and annotation 5 assigned to new locus HERV9\_4706 (sololtr).
+  + **HERV9_4273** LTR12C and LTR12E in opposite directions.
+Annotations 1-2 assigned to HERV9\_4273 (oneside) and annotation 3 assigned to new locus HERV9\_4707 (sololtr).
 
 ### Unusual
 I also double-checked some of the unusual annotations to see what is going on:
+  + **HERV9_0096** LTR12D is inserted into HERV9(LTR12D) provirus in opposite direction
+  + **HERV9_1554** LTR12C is inserted into HERV9(LTR12B) provirus in same direction
+  + **HERV9_1917** LTR12D is inserted into HERV9(LTR12) provirus in opposite direction
 
 ## 7. Manual merge/split
 
@@ -209,7 +238,7 @@ These scripts correctly update the merge line(s) for the locus and rename all th
 belonging to the locus.
 
 ```bash
-# Here is the manual merge/split pipeline
+cat 
 ```
 
 ## 8. Filter by covered length
