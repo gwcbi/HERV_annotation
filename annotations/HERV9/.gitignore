@@ -1,4 +1,4 @@
 ucsc/
 snapshots/
 *.gtf
-final_table.hg19.txt
+*.locus_table.txt

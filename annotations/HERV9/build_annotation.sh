@@ -4,7 +4,7 @@
 export PATH=$(dirname $(dirname $PWD))/bin:$PATH
 export PYTHONPATH=$(dirname $(dirname $PWD))/python:$PYTHONPATH
 
-### Download RepeatMasker tracks from UCSC ################################################
+### Download RepeatMasker tracks from UCSC ###############################################
 mkdir -p ucsc
 
 # Internal
@@ -20,21 +20,17 @@ for model in $models; do
 done
 
 wc -l ucsc/*
-##########################################################################################
 
 ### Format UCSC tables as GTF ############################################################
 for f in ucsc/*.hg19.txt; do
     table2gtf < $f > ${f%.*}.gtf
 done
-##########################################################################################
 
 ### Determine merge distance #############################################################
 mergedist=$(cat ucsc/HERV9-int.hg19.gtf | calculate_gaplength)
-##########################################################################################
 
 ### Initial merge using bedtools cluster #################################################
 cat ucsc/*.hg19.gtf | sortgtf | bedtools cluster -d $mergedist -i -| mergeclusters --prefix HERV9 > initial_merge.hg19.gtf
-##########################################################################################
 
 ### Setup GTF for visualization ##########################################################
 mkdir -p tmp
@@ -47,11 +43,8 @@ cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'soloint' > tmp/soloint.gtf
 cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'sololtr' > tmp/sololtr.gtf
 cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'unusual' > tmp/unusual.gtf
 
-##########################################################################################
-
 ### Take the snapshots ###################################################################
 [[ $1 == 'SNAPSHOT' ]] && python igvdriver_HERV9.py
-##########################################################################################
 
 ### Manual merge/split ###################################################################
 cat initial_merge.hg19.gtf | \
@@ -72,15 +65,12 @@ cat initial_merge.hg19.gtf | \
         manual_split --name HERV9_4082 --split 2 --newname HERV9_4705,HERV9_4082 --category oneside,prototype | \
         manual_split --name HERV9_4202 --split 4 --newname HERV9_4202,HERV9_4706 --category oneside,sololtr | \
         manual_split --name HERV9_4273 --split 2 --newname HERV9_4273,HERV9_4707 --category oneside,sololtr > edited.hg19.gtf
-##########################################################################################
 
-### Take the snapshots ###################################################################
+### View edited files ####################################################################
 [[ $1 == 'SNAPSHOT' ]] && python igvdriver_edited_HERV9.py
-##########################################################################################
 
 ### Filter by covered length #############################################################
 filter_covlen --threshold 500 < edited.hg19.gtf > filtered.hg19.gtf
-##########################################################################################
 
 ### Assign names to loci #################################################################
 # Map locus IDs to cytogenic bands
@@ -89,17 +79,12 @@ grep 'merged' filtered.hg19.gtf | bedtools intersect -wo -a - -b ../other_source
 
 # Assign names to loci that are not solo LTR and are over 500 bp
 python names_HERV9.py > tmp/name_table.txt
-##########################################################################################
 
 ### Add locus tag to GTF #################################################################
 add_locus_tag --mapping tmp/name_table.txt < filtered.hg19.gtf > HERV9_combined.hg19.gtf
-##########################################################################################
 
 ### Create final annotation files ########################################################
 grep 'merged' HERV9_combined.hg19.gtf > HERV9_merged.hg19.gtf
 grep -v 'merged' HERV9_combined.hg19.gtf > HERV9.hg19.gtf
-##########################################################################################
-
-### Create a table for each locus ########################################################
 gtf2table HERV9_merged.hg19.gtf > HERV9.locus_table.txt
-##########################################################################################
+
