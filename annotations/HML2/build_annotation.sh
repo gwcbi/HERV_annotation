@@ -20,21 +20,17 @@ for model in $models; do
 done
 
 wc -l ucsc/*
-##########################################################################################
 
 ### Format UCSC tables as GTF ############################################################
 for f in ucsc/*.hg19.txt; do
     table2gtf < $f > ${f%.*}.gtf
 done
-##########################################################################################
 
 ### Determine merge distance #############################################################
 mergedist=$(cat ucsc/HERVK-int.hg19.gtf | calculate_gaplength)
-##########################################################################################
 
 ### Initial merge using bedtools cluster #################################################
 cat ucsc/*.hg19.gtf | sortgtf | bedtools cluster -d $mergedist -i -| mergeclusters --prefix HML2 > initial_merge.hg19.gtf
-##########################################################################################
 
 ### Setup GTF for visualization ##########################################################
 mkdir -p tmp
@@ -48,11 +44,9 @@ cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'sololtr' > tmp/sololtr.gtf
 cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'unusual' > tmp/unusual.gtf
 
 cat ../other_sources/subramanianT*.hg19.gtf | sed 's/^/chr/' | sortgtf > tmp/subtables.gtf
-##########################################################################################
 
 ### Take the snapshots ###################################################################
 [[ $1 == 'SNAPSHOT' ]] && python igvdriver_HML2.py
-##########################################################################################
 
 ### Manual merge/split ###################################################################
 cat initial_merge.hg19.gtf | \
@@ -60,11 +54,9 @@ cat initial_merge.hg19.gtf | \
     manual_merge --names HML2_1025,HML2_1026 --category prototype | \
     manual_merge --names HML2_1067,HML2_1068 --category prototype | \
     manual_split --name HML2_1101 --split 3 --newname HML2_1177,HML2_1101 --category sololtr,prototype > edited.hg19.gtf
-##########################################################################################
 
 ### Filter by covered length #############################################################
 filter_covlen --threshold 500 < edited.hg19.gtf > filtered.hg19.gtf
-##########################################################################################
 
 ### Assign names to loci #################################################################
 # Map locus IDs to cytogenic bands
@@ -78,15 +70,11 @@ grep 'merged' filtered.hg19.gtf | bedtools intersect -wo -a - -b tmp/subtables.g
 # Assign names to loci that are not solo LTR and are over 500 bp
 # Also for loci that are already named
 python names_HML2.py > tmp/name_table.txt
-##########################################################################################
 
 ### Add locus tag to GTF #################################################################
-add_locus_tag --mapping tmp/name_table.txt < filtered.hg19.gtf > final_combined.hg19.gtf
-##########################################################################################
+add_locus_tag --mapping tmp/name_table.txt < filtered.hg19.gtf > HML2_combined.hg19.gtf
 
 ### Create final annotation files ########################################################
-grep 'merged' final_combined.hg19.gtf > final_merged.hg19.gtf
-grep -v 'merged' final_combined.hg19.gtf > final.hg19.gtf
-##########################################################################################
-
-gtf2table final_merged.hg19.gtf > final_table.hg19.txt
+grep 'merged' final_combined.hg19.gtf > HML2_merged.hg19.gtf
+grep -v 'merged' final_combined.hg19.gtf > HML2.hg19.gtf
+gtf2table final_merged.hg19.gtf > HML2.locus_table.txt

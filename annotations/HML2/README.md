@@ -6,7 +6,7 @@ Building HML2 Annotation
 Set your PATH and PYTHONPATH so that you can find the scripts in this repository
 
 ```bash
-### Set environment variables
+### Set environment variables ############################################################
 export PATH=$(dirname $(dirname $PWD))/bin:$PATH
 export PYTHONPATH=$(dirname $(dirname $PWD))/python:$PYTHONPATH
 ```
@@ -18,9 +18,8 @@ Members of the LTR5 subfamily include LTR5, LTR5A, LTR5B, and LTR5_Hs. In order 
 the annotation, first we need to download the RepeatMasker tracks from UCSC.
 
 ```bash
-### Download RepeatMasker tracks from UCSC
+### Download RepeatMasker tracks from UCSC ################################################
 mkdir -p ucsc
-echo -e '*\n!.gitignore' > ucsc/.gitignore
 
 # Internal
 mysql -h genome-mysql.cse.ucsc.edu -u genome -D hg19 -A \
@@ -35,7 +34,9 @@ for model in $models; do
 done
 
 wc -l ucsc/*
+```
 
+```
 # Output:
 #      256 ucsc/HERVK-int.hg19.txt
 #       21 ucsc/LTR5.hg19.txt
@@ -51,11 +52,10 @@ The next step is to format the RepeatMasker tracks as GTF. I have provided a scr
 `table2gtf` that puts the tracks into the desired format.
 
 ```bash
-### Format UCSC tables as GTF
+### Format UCSC tables as GTF ############################################################
 for f in ucsc/*.hg19.txt; do
     table2gtf < $f > ${f%.*}.gtf
 done
-
 ```
 
 ## 3. Determine merge distance
@@ -75,8 +75,11 @@ that two separate hits are adjacent and have the same score, we reject any hits 
 more than 10kb apart).
 
 ```bash
+### Determine merge distance #############################################################
 mergedist=$(cat ucsc/HERVK-int.hg19.gtf | calculate_gaplength)
+```
 
+```
 # Output:
 # chr4:165920483-165920578(+) --- 308 --- chr4:165920886-165921385(+)
 # chr6:28652000-28655158(+) --- 975 --- chr6:28656133-28659787(+)
@@ -126,9 +129,11 @@ so that downstream software can be aware of gaps in the locus, while "merged" an
 span all annotations for the cluster. and are used for grouping together the annotations.
 
 ```bash
-### Initial merge using bedtools cluster
+### Initial merge using bedtools cluster #################################################
 cat ucsc/*.hg19.gtf | sortgtf | bedtools cluster -d $mergedist -i -| mergeclusters --prefix HML2 > initial_merge.hg19.gtf
+```
 
+```
 # Output:
 # prototype:     60
 # oneside:     51
@@ -147,6 +152,7 @@ snapshot of each locus. The snapshots can be easily paged through using normal i
 viewing software.
 
 ```bash
+### Setup GTF for visualization ##########################################################
 mkdir -p tmp
 
 cat ucsc/*.hg19.gtf | sortgtf > tmp/concat.gtf
@@ -159,7 +165,8 @@ cat initial_merge.hg19.gtf | grep -v 'merged' | grep 'unusual' > tmp/unusual.gtf
 
 cat ../other_sources/subramanianT*.hg19.gtf | sed 's/^/chr/' | sortgtf > tmp/subtables.gtf
 
-python igvdriver_HML2.py
+### Take the snapshots ###################################################################
+[[ $1 == 'SNAPSHOT' ]] && python igvdriver_HML2.py
 ```
 
 ## 6. Identify annotations to merge/split
@@ -192,6 +199,7 @@ These scripts correctly update the merge line(s) for the locus and rename all th
 belonging to the locus.
 
 ```bash
+### Manual merge/split ###################################################################
 cat initial_merge.hg19.gtf | \
     manual_merge --names HML2_0706,HML2_0707 --category prototype | \
     manual_merge --names HML2_1025,HML2_1026 --category prototype | \
@@ -204,33 +212,33 @@ cat initial_merge.hg19.gtf | \
 Exclude locus if total number of bases aligned to model is less than threshold
 
 ```bash
+### Filter by covered length #############################################################
 filter_covlen --threshold 500 < edited.hg19.gtf > filtered.hg19.gtf
 ```
 
 ## 9. Assign names to loci
 
-Create a text file mapping the locus ID to the cytogenetic band.
-
-```bash
-grep 'merged' filtered.hg19.gtf | bedtools intersect -wo -a - -b ../other_sources/cytoband.gtf | \
-    perl -lne '/^chr([XY\d]+)\s.*name "(\S+)".*gene_id "([\S\.]+)"/;print "$2\t$1$3"' > tmp/cyto_name_map.txt
-```
-
-Also create a text file mapping the locus ID to annotations from the literature
-
-```bash
-grep 'merged' filtered.hg19.gtf | bedtools intersect -wo -a - -b tmp/subtables.gtf | \
-    perl -lne '/name "(\S+)".*locus "([\S\.]+)"/;print "$1\t$2"' > tmp/sub_name_map.txt
-
-```
-
-The script `names_HML2.py` creates names for each locus using the cytogenetic band. If multiple
+Create text files mapping the locus ID to the cytogenetic band and to annotations from 
+the literature. The script `names_HML2.py` creates names for each locus using the cytogenetic band. If multiple
 loci are present in the same band, a letter (a,b,c...) is added to the name. We compare the
 names we generate to the names given in the literature.
 
 ```bash
-python names_HML2.py > tmp/name_table.txt
+### Assign names to loci #################################################################
+# Map locus IDs to cytogenic bands
+grep 'merged' filtered.hg19.gtf | bedtools intersect -wo -a - -b ../other_sources/cytoband.gtf | \
+    perl -lne '/^chr([XY\d]+)\s.*name "(\S+)".*gene_id "([\S\.]+)"/;print "$2\t$1$3"' > tmp/cyto_name_map.txt
 
+# Map locus IDs to aliases from Subramanian et al.
+grep 'merged' filtered.hg19.gtf | bedtools intersect -wo -a - -b tmp/subtables.gtf | \
+    perl -lne '/name "(\S+)".*locus "([\S\.]+)"/;print "$1\t$2"' > tmp/sub_name_map.txt
+
+# Assign names to loci that are not solo LTR and are over 500 bp
+# Also for loci that are already named
+python names_HML2.py > tmp/name_table.txt
+```
+
+```
 # Output:
 # Mismatch: 3p12.3 3p12.3b
 # Mismatch: 3q21.2 3q21.2b
@@ -252,26 +260,19 @@ The locus names generated in the previous step are incorporated into the GTF fil
 is put into the "locus" field, which is used by telescope.
 
 ```bash
+### Add locus tag to GTF #################################################################
 add_locus_tag --mapping tmp/name_table.txt < filtered.hg19.gtf > final_combined.hg19.gtf
 ```
 
 ## 11. Create final annotation files
 
-Create a file containing only the merged lines, `final_merged.hg19.gtf`. This is useful
-for overlap testing or simulation.
+Create two final annotation files from the combined file. `HML2_merged.hg19.gtf` contains
+only the merged lines, and `HML2.hg19.gtf` contains only the annotation lines. The latter
+is used by telescope. Also create a table containing one row for each merged line, `HML2.locus_table.txt`.
 
 ```bash
-grep 'merged' final_combined.hg19.gtf > final_merged.hg19.gtf
-```
-
-Create a file containing only the annotation lines, `final.hg19.gtf`. This is used by telescope.
-
-```bash
-grep -v 'merged' final_combined.hg19.gtf > final.hg19.gtf
-```
-
-Create a table for each merged line.
-
-```bash
-gtf2table final_merged.hg19.gtf > final_table.hg19.txt
+### Create final annotation files ########################################################
+grep 'merged' final_combined.hg19.gtf > HML2_merged.hg19.gtf
+grep -v 'merged' final_combined.hg19.gtf > HML2.hg19.gtf
+gtf2table final_merged.hg19.gtf > HML2.locus_table.txt
 ```

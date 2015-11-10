@@ -285,7 +285,10 @@ filter_covlen --threshold 500 < edited.hg19.gtf > filtered.hg19.gtf
 
 ## 9. Assign names to loci
 
-Create a text file mapping the locus ID to the cytogenetic band.
+Create a text file mapping the locus ID to the cytogenetic band. The script `names_HERV9.py`
+creates names for each locus using the cytogenetic band. If multiple
+loci are present in the same band, a letter (a,b,c...) is added to the name. We compare the
+names we generate to the names given in the literature.
 
 ```bash
 ### Assign names to loci #################################################################
@@ -296,10 +299,6 @@ grep 'merged' filtered.hg19.gtf | bedtools intersect -wo -a - -b ../other_source
 # Assign names to loci that are not solo LTR and are over 500 bp
 python names_HERV9.py > tmp/name_table.txt
 ```
-
-The script `names_HERV9.py` creates names for each locus using the cytogenetic band. If multiple
-loci are present in the same band, a letter (a,b,c...) is added to the name. We compare the
-names we generate to the names given in the literature.
 
 ## 10. Update GTF with locus name
 
