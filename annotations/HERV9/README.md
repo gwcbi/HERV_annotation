@@ -238,8 +238,27 @@ These scripts correctly update the merge line(s) for the locus and rename all th
 belonging to the locus.
 
 ```bash
-cat 
+cat initial_merge.hg19.gtf | \
+        manual_merge --names HERV9_2578,HERV9_2579 --category prototype | \
+        manual_merge --names HERV9_0461,HERV9_0462 --category prototype | \
+        manual_merge --names HERV9_0664,HERV9_0665 --category prototype | \
+        manual_merge --names HERV9_1485,HERV9_1486 --category prototype | \
+        manual_merge --names HERV9_1998,HERV9_1999 --category prototype | \
+        manual_merge --names HERV9_2434,HERV9_2435 --category prototype | \
+        manual_merge --names HERV9_3483,HERV9_3484 --category prototype | \
+        manual_merge --names HERV9_3516,HERV9_3517 --category prototype | \
+        manual_split --name HERV9_0213 --split 5 --newname HERV9_0213,HERV9_4699 --category prototype,prototype | \
+        manual_split --name HERV9_1480 --split 3 --newname HERV9_1480,HERV9_4700 --category prototype,soloint | \
+        manual_split --name HERV9_1648 --split 1 --newname HERV9_4701,HERV9_1648 --category sololtr,prototype | \
+        manual_split --name HERV9_2426 --split 4 --newname HERV9_2426,HERV9_4702 --category prototype,sololtr | \
+        manual_split --name HERV9_2638 --split 1 --newname HERV9_4703,HERV9_2638 --category sololtr,prototype | \
+        manual_split --name HERV9_3560 --split 2 --newname HERV9_3560,HERV9_4704 --category oneside,sololtr | \
+        manual_split --name HERV9_4082 --split 2 --newname HERV9_4705,HERV9_4082 --category oneside,prototype | \
+        manual_split --name HERV9_4202 --split 4 --newname HERV9_4202,HERV9_4706 --category oneside,sololtr | \
+        manual_split --name HERV9_4273 --split 2 --newname HERV9_4273,HERV9_4707 --category oneside,sololtr > edited.hg19.gtf
 ```
+
+I wrote a script that instructs IGV to display all the edited loci, `igvdriver_edited_HERV9.py`.
 
 ## 8. Filter by covered length
 
@@ -263,7 +282,6 @@ loci are present in the same band, a letter (a,b,c...) is added to the name. We 
 names we generate to the names given in the literature.
 
 ```bash
-# Need to write this script
 # python names_HERV9.py > tmp/name_table.txt
 ```
 
@@ -273,26 +291,26 @@ The locus names generated in the previous step are incorporated into the GTF fil
 is put into the "locus" field, which is used by telescope.
 
 ```bash
-add_locus_tag --mapping tmp/name_table.txt < filtered.hg19.gtf > final_combined.hg19.gtf
+add_locus_tag --mapping tmp/name_table.txt < filtered.hg19.gtf > HERV9_combined.hg19.gtf
 ```
 
 ## 11. Create final annotation files
 
-Create a file containing only the merged lines, `final_merged.hg19.gtf`. This is useful
+Create a file containing only the merged lines, `HERV9_merged.hg19.gtf`. This is useful
 for overlap testing or simulation.
 
 ```bash
-grep 'merged' final_combined.hg19.gtf > final_merged.hg19.gtf
+grep 'merged' HERV9_combined.hg19.gtf > HERV9_merged.hg19.gtf
 ```
 
-Create a file containing only the annotation lines, `final.hg19.gtf`. This is used by telescope.
+Create a file containing only the annotation lines, `HERV9.hg19.gtf`. This is used by telescope.
 
 ```bash
-grep -v 'merged' final_combined.hg19.gtf > final.hg19.gtf
+grep -v 'merged' HERV9_combined.hg19.gtf > HERV9.hg19.gtf
 ```
 
-Create a table for each merged line.
+Create a table for each merged line, `HERV9.locus_table.txt`.
 
 ```bash
-gtf2table final_merged.hg19.gtf > final_table.hg19.txt
+gtf2table HERV9_merged.hg19.gtf > HERV9.locus_table.txt
 ```

@@ -88,17 +88,18 @@ grep 'merged' filtered.hg19.gtf | bedtools intersect -wo -a - -b ../other_source
     perl -lne '/^chr([XY\d]+)\s.*name "(\S+)".*gene_id "([\S\.]+)"/;print "$2\t$1$3"' > tmp/cyto_name_map.txt
 
 # Assign names to loci that are not solo LTR and are over 500 bp
-# Also for loci that are already named
 python names_HERV9.py > tmp/name_table.txt
 ##########################################################################################
 
 ### Add locus tag to GTF #################################################################
-add_locus_tag --mapping tmp/name_table.txt < filtered.hg19.gtf > final_combined.hg19.gtf
+add_locus_tag --mapping tmp/name_table.txt < filtered.hg19.gtf > HERV9_combined.hg19.gtf
 ##########################################################################################
 
 ### Create final annotation files ########################################################
-grep 'merged' final_combined.hg19.gtf > final_merged.hg19.gtf
-grep -v 'merged' final_combined.hg19.gtf > final.hg19.gtf
+grep 'merged' HERV9_combined.hg19.gtf > HERV9_merged.hg19.gtf
+grep -v 'merged' HERV9_combined.hg19.gtf > HERV9.hg19.gtf
 ##########################################################################################
 
-gtf2table final_merged.hg19.gtf > final_table.hg19.txt
+### Create a table for each locus ########################################################
+gtf2table HERV9_merged.hg19.gtf > HERV9.locus_table.txt
+##########################################################################################
