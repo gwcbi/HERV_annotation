@@ -77,4 +77,4 @@ add_locus_tag --mapping tmp/name_table.txt < filtered.hg19.gtf > HML2_combined.h
 ### Create final annotation files ########################################################
 grep 'merged' HML2_combined.hg19.gtf > HML2_merged.hg19.gtf
 grep -v 'merged' HML2_combined.hg19.gtf > HML2.hg19.gtf
-gtf2table HML2_merged.hg19.gtf > HML2.locus_table.txt
+gtf2table HML2_merged.hg19.gtf | add_subfamily --gtf HML2.hg19.gtf > HML2.locus_table.txt

@@ -86,5 +86,4 @@ add_locus_tag --mapping tmp/name_table.txt < filtered.hg19.gtf > HERV9_combined.
 ### Create final annotation files ########################################################
 grep 'merged' HERV9_combined.hg19.gtf > HERV9_merged.hg19.gtf
 grep -v 'merged' HERV9_combined.hg19.gtf > HERV9.hg19.gtf
-gtf2table HERV9_merged.hg19.gtf > HERV9.locus_table.txt
-
+gtf2table HERV9_merged.hg19.gtf | add_subfamily --gtf  HERV9.hg19.gtf | HERV9.locus_table.txt
